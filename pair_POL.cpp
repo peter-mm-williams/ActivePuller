@@ -613,11 +613,15 @@ void PairPOL::coeff(int narg, char **arg)
   if (narg < 11 || narg > 12)
     error->all(FLERR,"Incorrect args for pair coefficients");
   if (!allocated) allocate();
-
+  
+  int ilo,ihi,jlo,jhi;
+  utils::bounds(FLERR,arg[0],1,atom->ntypes,ilo,ihi,error);
+  utils::bounds(FLERR,arg[1],1,atom->ntypes,jlo,jhi,error);
+  /*
   int ilo,ihi,jlo,jhi;
   utils::bounds(FLERR,arg[0],atom->ntypes,ilo,ihi, error);
   utils::bounds(FLERR,arg[1],atom->ntypes,jlo,jhi, error);
-
+  */
   double f_one = utils::numeric(FLERR,arg[2],false,lmp);
   chain_type = (int) utils::numeric(FLERR,arg[3],false,lmp);
   //int ctype_one = force->numeric(FLERR,arg[3]);
