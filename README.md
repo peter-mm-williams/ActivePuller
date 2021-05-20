@@ -29,4 +29,6 @@ Below are the modules that must be loaded to run the code on the two clusters to
 
 #### Farnam:
 * module load OpenMPI
+* module load SciPy-bundle/2021.02-fosscuda-2020b
+
 
