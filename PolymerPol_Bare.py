@@ -192,7 +192,7 @@ def Pol_Sim(xyzfile, logfile, Ndt, dt, P_thresh, fmag, phi_target, seedval, Nste
 	if epsilon==0:
 		lmp.command('atom_modify sort 1000 0.5')
 
-
+	lmp.command('comm_modify mode single cutoff 1.8')
 	# Relax System
 	if BA:
 		lmp.command('thermo_style custom step etotal epair ebond eangle pe ke fnorm fmax press')
