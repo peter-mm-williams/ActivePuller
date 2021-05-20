@@ -8,8 +8,8 @@ Files to run active puller simulations of a molecule applying a constant tangent
 2. Download ActivePuller Files
  * git clone https://github.com/peter-mm-williams/ActivePuller.git active_puller
 3. Move custom source files to src directory in lammps
- * mv active_puller/*pp lammps/src/
- * mv active_puller/*h lammps/src/
+ * cp active_puller/*pp lammps/src/
+ * cp active_puller/*h lammps/src/
 4. Build lammps
  * cd lammps/src
  * make yes-molecule
