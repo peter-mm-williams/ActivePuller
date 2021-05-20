@@ -188,7 +188,7 @@ def Pol_Sim(xyzfile, logfile, Ndt, dt, P_thresh, fmag, phi_target, seedval, Nste
 
 	# Initialize Velocities and Neighborlist
 	lmp.command('velocity all create '+str(T)+' '+str(seedval)+' mom no dist gaussian')
-	lmp.command('neighbor 0.8 bin')
+	#lmp.command('neighbor 0.8 bin')
 	if epsilon==0:
 		lmp.command('atom_modify sort 1000 0.5')
 
