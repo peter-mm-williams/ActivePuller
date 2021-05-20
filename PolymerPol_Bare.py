@@ -306,7 +306,7 @@ def Pol_Sim(xyzfile, logfile, Ndt, dt, P_thresh, fmag, phi_target, seedval, Nste
 	l_0s = np.array([0.1,1.0,2.0])
 	ks=2*np.pi/l_0s
 	Nfrac=500
-	Nper = Nsteps/Nfrac
+	Nper = int(np.round(Nsteps/Nfrac))
 	Nper_log = np.unique(np.round(np.logspace(0,np.log10(Nper),100)))
 	Ndiffs = np.append(Nper_log[0], Nper_log[1:]-Nper_log[0:-1])
 	
@@ -355,7 +355,7 @@ def Pol_Sim(xyzfile, logfile, Ndt, dt, P_thresh, fmag, phi_target, seedval, Nste
 				lmp.command('dump 3 all local '+str(int(np.round(10*Nsteps)))+' '+xyzfile[:-4]+'_short.pair index c_ids[1] c_ids[2] c_ids[3] c_ids[4] c_fs[1] c_fs[2] c_fs[3]')
 				lmp.command('dump_modify 3 first yes append yes')
 		else:
-			lmp.command('run '+str(Nper))
+			lmp.command('run '+str(int(Nper)))
 	if shortDat==1:
 		lmp.command('undump 3')
 		lmp.command('dump 3 all local '+str(int(Nsteps))+' '+xyzfile[:-4]+'_short.pair index c_ids[1] c_ids[2] c_ids[3] c_ids[4] c_fs[1] c_fs[2] c_fs[3]')
