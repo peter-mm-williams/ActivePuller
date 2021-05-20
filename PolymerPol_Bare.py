@@ -72,7 +72,7 @@ def Pol_Sim(xyzfile, logfile, Ndt, dt, P_thresh, fmag, phi_target, seedval, Nste
 
 	# Define Constants
 	ntype = 6
-	dt0=0.01
+	dt0=0.001
 	dphi=0.01
 	U_0=1e-10
 	f0=5e-13
