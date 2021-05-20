@@ -28,4 +28,5 @@ Below are the modules that must be loaded to run the code on the two clusters to
 * module load Libs/NUMPY
 
 #### Farnam:
-* module load pip
+* module load OpenMPI
+
