@@ -592,7 +592,7 @@ void PairPOL::settings(int narg, char **arg)
 {
   if (narg != 1) error->all(FLERR,"Illegal pair_style command");
 
-  cut_global = utils::numeric(FLERR,arg[0]);
+  cut_global = utils::numeric(FLERR,arg[0],false,lmp);
 
   // reset cutoffs that have been explicitly set
 
@@ -615,19 +615,19 @@ void PairPOL::coeff(int narg, char **arg)
   if (!allocated) allocate();
 
   int ilo,ihi,jlo,jhi;
-  utils::bounds(FLERR,arg[0],atom->ntypes,ilo,ihi);
-  utils::bounds(FLERR,arg[1],atom->ntypes,jlo,jhi);
+  utils::bounds(FLERR,arg[0],atom->ntypes,ilo,ihi, error);
+  utils::bounds(FLERR,arg[1],atom->ntypes,jlo,jhi, error);
 
-  double f_one = utils::numeric(FLERR,arg[2]);
-  chain_type = (int) utils::numeric(FLERR,arg[3]);
+  double f_one = utils::numeric(FLERR,arg[2],false,lmp);
+  chain_type = (int) utils::numeric(FLERR,arg[3],false,lmp);
   //int ctype_one = force->numeric(FLERR,arg[3]);
-  double k_one = utils::numeric(FLERR,arg[4]);
-  Npol = (int) utils::numeric(FLERR, arg[5]);
-  boundlow = (int) utils::numeric(FLERR, arg[6]);
-  boundhigh = (int) utils::numeric(FLERR, arg[7]);
-  sigma2  = utils::numeric(FLERR, arg[8]);
-  double fr_one = utils::numeric(FLERR,arg[9]);
-  seed = utils::inumeric(FLERR,arg[10]); //seed for random number generator. integer
+  double k_one = utils::numeric(FLERR,arg[4],false,lmp);
+  Npol = (int) utils::numeric(FLERR, arg[5],false,lmp);
+  boundlow = (int) utils::numeric(FLERR, arg[6],false,lmp);
+  boundhigh = (int) utils::numeric(FLERR, arg[7],false,lmp);
+  sigma2  = utils::numeric(FLERR, arg[8],false,lmp);
+  double fr_one = utils::numeric(FLERR,arg[9],false,lmp);
+  seed = (int) utils::numeric(FLERR,arg[10],false,lmp); //seed for random number generator. integer
 
   random = new RanMars(lmp,seed + comm->me);
   std::cout << "sigma2: " << sigma2 << "\n";
@@ -644,7 +644,7 @@ void PairPOL::coeff(int narg, char **arg)
   memory->grow(PolNeigh, Npol, 40, "pair:PolNeigh");
 
   double cut_one = cut_global;
-  if (narg == 8) cut_one = utils::numeric(FLERR,arg[6]);
+  if (narg == 8) cut_one = utils::numeric(FLERR,arg[6],false,lmp);
   //std::cout << "k_one: " << k_one << "\n";
   int count = 0;
   for (int i = ilo; i <= ihi; i++) {
