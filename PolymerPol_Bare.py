@@ -199,7 +199,7 @@ def Pol_Sim(xyzfile, logfile, Ndt, dt, P_thresh, fmag, phi_target, seedval, Nste
 	else:
 		lmp.command('thermo_style custom step etotal epair ebond pe ke fnorm fmax press')
 
-	lmp.command('thermo '+str(np.round(Ndt)))
+	lmp.command('thermo '+str(int(np.round(Ndt))))
 	lmp.command('timestep '+str(dt))
 	lmp.command('run 0')
 
@@ -254,7 +254,7 @@ def Pol_Sim(xyzfile, logfile, Ndt, dt, P_thresh, fmag, phi_target, seedval, Nste
 	lmp.command('unfix ln')
 	
 	# Set up thermo for experiment simulation
-	lmp.command('thermo '+str(np.round(Nsteps/1000)))
+	lmp.command('thermo '+str(int(np.round(Nsteps/1000))))
 	
 	# Change boundary conditions to shrinkwrapped
 	lmp.command('change_box all boundary s s s')
