@@ -43,9 +43,9 @@ FixBDBAOAB::FixBDBAOAB(LAMMPS *lmp, int narg, char **arg) :
   if (strcmp(style,"nve/sphere") != 0 && narg <= 5)
     error->all(FLERR,"Illegal fix nve command");
 
-  t_target = force->numeric(FLERR,arg[3]); // set temperature
-  t_period = force->numeric(FLERR,arg[4]); // same as t_period in fix_langevin_overdamp.cpp
-  seed = force->inumeric(FLERR,arg[5]); //seed for random number generator. integer
+  t_target = utils::numeric(FLERR,arg[3],false,lmp); // set temperature
+  t_period = utils::numeric(FLERR,arg[4],false,lmp); // same as t_period in fix_langevin_overdamp.cpp
+  seed = utils::inumeric(FLERR,arg[5],false,lmp); //seed for random number generator. integer
 
   if (t_target <= 0.0) error->all(FLERR,"Fix bd temperature must be > 0.0");
   if (t_period <= 0.0) error->all(FLERR,"Fix bd period must be > 0.0");
