@@ -124,11 +124,17 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	Ndt=400 # Goal number of logarithmically spaced lag times to calculate
 	lmpfile=xyzfile[:-4]+'.dat'
 	datfile=xyzfile[:-4]+'.txt'
+
 	# Extract info from .dat file and save coordinates as rs.npy and end-to-end vector as R.npy
 	t, rs, vs, types, Ls, Natoms=process_lmp(lmpfile,dt)
 	np.save(xyzfile[:-4]+'.rs.npy',rs)
 	np.save(xyzfile[:-4]+'.R.npy',np.array(rs[Nmon-1,:,:]-rs[0,:,:]))
 	Ree=rs[Nmon-1,:,:]-rs[0,:,:]
+	
+	# Make .xyz file 
+	make_tclfile(datfile[:-4]+'.tcl', np.ones(len(np.unique(types))+1), Ls[0,0])
+	write_xyzfile(datfile[:-4]+'.xyz', rs, types, Ls[0])
+
 	# Generate logarithmically spaced indices for correlation functions
 	inds=np.append(np.array([0]),np.unique(np.round(np.logspace(np.log10(1),np.log10(len(t)-2),Ndt)))).astype(int)
 	print('inds:')
@@ -771,6 +777,65 @@ def calc_theta_phi(r):
         phi=np.arccos(cosphi)
     return theta, phi
 
+def write_xyzfile(filename, rs, types,L):# mols, r_mol, atom_types, time):
+    names=["X","Ac","Ag","Al","Am","Ar","As","At","Au","B","Ba","Be","Bh",
+            "Bi","Bk","Br","Ca","Cd","Ce","Cf","Cl","Cm","Co","Cr","Cs","Cu","Db",
+            "Ds","Dy","Er","Es","Eu","F","Fe","Fm","Fr","Ga","Gd","Ge","He","Hf",
+            "Hg","Ho","Hs","I","In","Ir","K","Kr","La","Li","Lr","Lu","Md","Mg","Mn",
+            "Mo","Mt","Na","Nb","Nd","Ne","Ni","No","Np","Os","Pa","Pb",
+            "Pd","Pm","Po","Pr","Pt","Pu","Ra","Rb","Re","Rf","Rg","Rh","Rn","Ru",
+            "Sb","Sc","Se","Sg","Si","Sm","Sn","Sr","Ta","Tb","Tc","Te","Th","Ti","Tl",
+            "Tm","U","V","W","Xe","Y","Yb","Zn","Zr"]
+    Ntype = len(np.unique(types))
+    file_handle = open(filename, 'w')
+    N=np.shape(rs)[0]
+    Nt = np.shape(rs)[2]
+    print(N)
+    for t in np.arange(0,Nt):
+        file_handle.write(str(N))
+        file_handle.write('\nAtoms. Timestep: '+str(0))
+
+        for i in np.arange(0,N):
+            file_handle.write('\n'+names[int(types[i])])
+            for k in np.arange(0,3):
+                file_handle.write('\t'+str(rs[i,k,t]))
+        '''
+        for i in np.arange(0,N):
+            file_handle.write('\n'+names[int(types[i]+Ntype)])
+            for k in np.arange(0,3):
+                file_handle.write('\t'+str(rs[i,k,t]-L*np.round(rs[i,k,t]/L)))
+        '''
+        file_handle.write('\n')
+    file_handle.close()
+    
+def make_tclfile(tclname, diameters, L):
+    f=open(tclname,'w')
+    ntype=len(diameters)
+    colors=["blue","red","gray","orange","yellow","tan","silver","green","white",
+            "pink","cyan","purple","lime","mauve","ochre","iceblue","black","yellow2",
+            "yellow3","green2","green3","cyan2","cyan3","blue2","blue3","violet","violet2",
+            "magenta","magenta2","red2","red3","orange2","orange3"]
+    names=["X","Ac","Ag","Al","Am","Ar","As","At","Au","B","Ba","Be","Bh",
+            "Bi","Bk","Br","Ca","Cd","Ce","Cf","Cl","Cm","Co","Cr","Cs","Cu","Db",
+            "Ds","Dy","Er","Es","Eu","F","Fe","Fm","Fr","Ga","Gd","Ge","He","Hf",
+            "Hg","Ho","Hs","I","In","Ir","K","Kr","La","Li","Lr","Lu","Md","Mg","Mn",
+            "Mo","Mt","Na","Nb","Nd","Ne","Ni","No","Np","Os","Pa","Pb",
+            "Pd","Pm","Po","Pr","Pt","Pu","Ra","Rb","Re","Rf","Rg","Rh","Rn","Ru",
+            "Sb","Sc","Se","Sg","Si","Sm","Sn","Sr","Ta","Tb","Tc","Te","Th","Ti","Tl",
+            "Tm","U","V","W","Xe","Y","Yb","Zn","Zr"]
+    i_c=0
+    i_n=0
+    for i_n in np.arange(0,ntype):
+        f.write('color Element '+names[i_n]+' '+colors[i_c]+'\n')
+        f.write('set natoms [atomselect 0 \"name '+names[i_n]+'\";];\n')
+        f.write('$natoms set radius '+str(diameters[i_n]/2)+'\n\n')
+        i_n+=1
+        i_c+=1
+        if i_c>len(colors)-1:
+            i_c=0
+    f.write('set cell [pbc set {'+str(L)+' '+str(L)+' '+str(L)+' } -all];\n')
+    f.write('pdb box -toggle -center origin -color red;')
+    f.close()
 
 ProcPol(args.xyzfile, args.logfile, args.Ndt, args.dt, args.P0, args.f0, args.phi, args.seed, args.Nsteps, args.T, args.epsilon, args.molfile, args.theta,
  args.lef, args.bondangles, args.sigCrowd, args.k_att, args.sig_p, args.N, args.BCs, args.Nmon)
