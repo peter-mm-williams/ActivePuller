@@ -131,7 +131,7 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	np.save(xyzfile[:-4]+'.R.npy',np.array(rs[Nmon-1,:,:]-rs[0,:,:]))
 	Ree=rs[Nmon-1,:,:]-rs[0,:,:]
 	
-	# Make .xyz file 
+	# Make .xyz file for visualization
 	make_tclfile(datfile[:-4]+'.tcl', np.ones(len(np.unique(types))+1), Ls[0,0])
 	write_xyzfile(datfile[:-4]+'.xyz', rs, types, Ls[0])
 
