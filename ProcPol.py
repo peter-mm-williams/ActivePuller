@@ -37,7 +37,7 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	# Load in Short time coordinate data from "_short.dat"
 	Nfrac=500
 	filename = xyzfile[:-4]
-	# Get log spaced lag times 
+	# Get log spaced lag times
 	Nper = Nsteps/Nfrac
 	Nper_log = np.unique(np.round(np.logspace(0,np.log10(Nper),100)))
 	Ndiffs = np.append(Nper_log[0], Nper_log[1:]-Nper_log[0:-1])
@@ -59,14 +59,14 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	rs_master = np.zeros((Natoms,3,Nfrac,len(Ndiffs)))*np.nan
 	i=0
 	for nt in np.arange(0,Nfrac):
-	    for ind in np.arange(0,len(Ndiffs)):
-	        ts[nt,ind] = t[i]
-	        rs_master[:,:,nt,ind] = rs[:,:,i]
-	        i+=1
-	        if i>np.shape(rs)[2]:
-	        	break
-        if i>np.shape(rs)[2]:
-        	break
+		for ind in np.arange(0,len(Ndiffs)):
+			ts[nt,ind] = t[i]
+			rs_master[:,:,nt,ind] = rs[:,:,i]
+			i+=1
+			if i>np.shape(rs)[2]:
+				break
+		if i>np.shape(rs)[2]:
+			break
 	np.save(xyzfile[:-4]+'.Rshort.npy', rs_master) # save rs_master to npy file
 
 	# Load in forces at short times and calculate force correlation functions
@@ -74,14 +74,14 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 		fs_master = np.zeros((Natoms, 3, Nfrac, len(Ndiffs)))
 		i=0
 		for nt in np.arange(0,Nfrac):
-		    for ind in np.arange(0,len(Ndiffs)):
-		        tsF[nt,ind] = tF[i]
-		        fs_master[:,:,nt,ind] = Fs[:,:,i]
-		        i+=1
-		        if i>np.shape(Fs)[2]:
-		        	break
-	        if i>np.shape(Fs)[2]:
-	        	break
+			for ind in np.arange(0,len(Ndiffs)):
+				tsF[nt,ind] = tF[i]
+				fs_master[:,:,nt,ind] = Fs[:,:,i]
+				i+=1
+				if i>np.shape(Fs)[2]:
+					break
+			if i>np.shape(Fs)[2]:
+				break
 		np.save(xyzfile[:-4]+'.Fshort.npy', fs_master)
 		dis=np.arange(1,5)
 		FAC = np.zeros(len(Ndiffs))
@@ -90,20 +90,20 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 		fmean2 = np.nansum(fmean*fmean)
 		FACnorm = np.nanmean(np.sum(fs_master[:Nchain,:,:,0]*fs_master[:Nchain,:,:,0],axis=1))-fmean2
 		for i in np.arange(0,len(Ndiffs)):
-		    FAC[i] = (np.nanmean(np.sum(fs_master[:Nchain,:,:,i]*fs_master[:Nchain,:,:,0],axis=1))-fmean2)/FACnorm
+			FAC[i] = (np.nanmean(np.sum(fs_master[:Nchain,:,:,i]*fs_master[:Nchain,:,:,0],axis=1))-fmean2)/FACnorm
 		for i in np.arange(-len(Ndiffs),len(Ndiffs)):
-		    for j in np.arange(0,len(dis)):
-		        if i<0:
-		            FPC[j,i] = np.nanmean(np.sum(fs_master[dis[j]:Nchain,:,:,i]*fs_master[:Nchain-dis[j],:,:,0],axis=1))
-		            f_norm = np.nanmean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
-		            g_norm = np.nanmean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
-		            FPC[j,i]/= (f_norm*g_norm)
-		            #np.sqrt(np.mean(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1))*np.mean(np.sum(fs_master[:Nchain-1-dis[j],:,:,:]**2,axis=1)))
-		        else:
-		            FPC[j,i] = np.nanmean(np.sum(fs_master[dis[j]:Nchain,:,:,0]*fs_master[:Nchain-dis[j],:,:,i],axis=1))
-		            f_norm = np.nanmean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
-		            g_norm = np.nanmean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
-		            FPC[j,i]/= (f_norm*g_norm)
+			for j in np.arange(0,len(dis)):
+				if i<0:
+					FPC[j,i] = np.nanmean(np.sum(fs_master[dis[j]:Nchain,:,:,i]*fs_master[:Nchain-dis[j],:,:,0],axis=1))
+					f_norm = np.nanmean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
+					g_norm = np.nanmean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
+					FPC[j,i]/= (f_norm*g_norm)
+					#np.sqrt(np.mean(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1))*np.mean(np.sum(fs_master[:Nchain-1-dis[j],:,:,:]**2,axis=1)))
+				else:
+					FPC[j,i] = np.nanmean(np.sum(fs_master[dis[j]:Nchain,:,:,0]*fs_master[:Nchain-dis[j],:,:,i],axis=1))
+					f_norm = np.nanmean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
+					g_norm = np.nanmean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
+					FPC[j,i]/= (f_norm*g_norm)
 		np.save(xyzfile[:-4]+'.FPCshort.npy', FPC)
 		np.save(xyzfile[:-4]+'.FACshort.npy', FAC)
 
@@ -114,9 +114,9 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	dts = np.zeros(np.shape(rs_master)[3])
 	# Fill displacement array and end-to-end vector correlation function as a function of time lag
 	for i in np.arange(0,np.shape(rs_master)[3]):
-	    dR[:,:,:,i] = rs_master[:,:,:,i]-rs_master[:,:,:,0]
-	    dts[i] = ts[0,i]-ts[0,0]
-	    Ct[:,i] = np.nanmean(Ree[:,:,i]*Ree[:,:,0],axis=0)
+		dR[:,:,:,i] = rs_master[:,:,:,i]-rs_master[:,:,:,0]
+		dts[i] = ts[0,i]-ts[0,0]
+		Ct[:,i] = np.nanmean(Ree[:,:,i]*Ree[:,:,0],axis=0)
 	# Calculate mean square displacement
 	MSD = np.nanmean(np.sum(dR**2,axis=1),axis=1)
 	# Take mean and normalize end-to-end vector correlation function ("Ct_norm")
@@ -124,7 +124,7 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	Ct_norm /= Ct_norm[0]
 	np.save(xyzfile[:-4]+'.Ctshort.npy',Ct_norm)
 	np.save(xyzfile[:-4]+'.MSDshort.npy',MSD)
-	
+
 	'''
 	------------------------------------ Make calculations for long time data (.dat file) -----------------------------
 	'''
@@ -138,7 +138,7 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	np.save(xyzfile[:-4]+'.rs.npy',rs)
 	np.save(xyzfile[:-4]+'.R.npy',np.array(rs[Nmon-1,:,:]-rs[0,:,:]))
 	Ree=rs[Nmon-1,:,:]-rs[0,:,:]
-	
+
 	# Make .xyz file for visualization
 	make_tclfile(datfile[:-4]+'.tcl', np.ones(len(np.unique(types))+1), Ls[0,0])
 	write_xyzfile(datfile[:-4]+'.xyz', rs, types, Ls[0])
@@ -266,7 +266,7 @@ def calc_Rg(rs):
 		rs     position coordinates (N x ndim x Nt)
 	Outputs:
 		Rg     vector of the radius of gyration (length Nt)
-		
+
 	'''
 	N = np.shape(rs)[0]
 	r_com = np.tile(np.nanmean(rs,axis=0),(N,1,1))
@@ -278,7 +278,7 @@ def get_HiCslice(r_s, thresh):
 	'''
 	Calculate a singulat time slice of a contact map
 	Inputs:
-		r_s       Array of position coordinates (N x ndim)    
+		r_s       Array of position coordinates (N x ndim)
 		thresh    Maximum distance to count as a contact
 	Outputs:
 		counts    N x N binary matrix of whether monomer i is in contact with monomer j for this configuration
@@ -322,115 +322,115 @@ def process_pair(lmpfile,dt, Natoms, x_pol):
 		lmpfile       path and filename for .pair file (string)
 		dt            timestep of simulation (scalar float)
 		Natoms        Number of atoms in simulation (scalar int)
-		x_pol         
+		x_pol
 	Outputs:
 		t             vector of times (length Nt, float)
 		Fs            array of forces
 	'''
-    x_lo = np.floor(x_pol).astype(int)
-    x_hi = np.ceil(x_pol).astype(int)
-    t=[]
-    Fs=[]
-    switch=0
-    Nval=0
-    cnt=0
-    tval=0
-    l_switch=0
-    ind=-1
-    f=open(lmpfile)
-    for x in f:
-        if x.strip()=='ITEM: TIMESTEP':
-            ind+=1
-            #t.append(float(f.readline().strip()))
-            #print(ind)
-            #print(t[-1])
-            tval=1
-            pos_data=0
-            if switch>0:# and cnt%10==0:
-                Fnorm = np.linalg.norm(fs,axis=1)
-                #print(Fnorm)
-                Fs=emptydstack(Fs,np.copy(fs))
-                #print(fs)
-                if switch==1:
-                    switch=2
-                fs=np.zeros((Natoms,3))
-        elif tval==1:
-            tval=0
-            #print(x.strip())
-            t.append(float(x.strip()))
-            #print(t[-1])
-        elif x.strip()=='ITEM: NUMBER OF ENTRIES' and switch==0:
-            #print('found number of entries')
-            Nval=1
-        elif Nval==1:
-            Nval=0
-            N=int(x.strip())
-        elif x[0:16]=='ITEM: BOX BOUNDS' and switch==0:
-            l_switch=1
-        elif l_switch==1:
-            l_switch=2
-            l_line=x.strip().split(' ')
-            #print(l_line)
-            Lx=-float(l_line[0])+float(l_line[1])
-            #print(float(l_line[0]))
-  
-            #print(Lx)
-        elif l_switch==2:
-            l_switch=3
-            l_line=x.strip().split(' ')
-            #print(l_line)
-            Ly=-float(l_line[0])+float(l_line[1])
-        elif l_switch==3:
-            l_switch=0
-            l_line=x.strip().split(' ')
-            #print(l_line)
-            Lz=-float(l_line[0])+float(l_line[1])
-            Ls=np.array([Lx,Ly,Lz])
-        elif x[0:13]=='ITEM: ENTRIES':
-            #print('found entries')
-            cnt+=1
-            pos_data=1
-            if switch==0:
-                switch=1
-                #print('initialize')
-                #rs=np.zeros((N,3,1000))
-                #vs=np.zeros((N,3,1000))
-                #print('initialization complete')
-                fs=np.zeros((Natoms,3))
-        elif pos_data==1:
-            line=x.strip().split(' ')
-            atomid0=int(line[1])-1
-            atomid1=int(line[2])-1
-            atomtype0=int(line[3])
-            atomtype1=int(line[4])
-            
-            fx=float(line[5])
-            fy=float(line[6])
-            fz=float(line[7])
-            if (atomtype0==2 and atomtype1 == 1) or (atomtype1==2 and atomtype0==1):
-                #print('before:')
-                #print(fs)
-                #print('x_lo: %d, x_hi:  %d' %(x_lo[ind],x_hi[ind]))
-                #print('types: %d %d' %(atomtype0, atomtype1))
-                #print('ids: %d %d' %(atomid0, atomid1))
-                #print(np.array([-fx,-fy,-fz]))
-                if atomtype0 == 2:
-                    if atomid1 == x_lo[ind] or atomid1 == x_hi[ind]:
-                        fs[atomid1,:]+= np.array([-fx,-fy,-fz])
-                        fs[atomid0,:]+= np.array([fx,fy,fz])
-                else:
-                    if atomid0 == x_lo[ind] or atomid0 == x_hi[ind]:
-                        fs[atomid0,:]+= np.array([fx,fy,fz])
-                        fs[atomid1,:]+= np.array([-fx,-fy,-fz])
-                #print('after:')
-                #print(fs)
-        #if ind>5:
-        #    break
-    Fnorm = np.linalg.norm(fs,axis=1)            
-    Fs=emptydstack(Fs,fs)
-    t=np.array(t)*float(dt)
-    print(t)
-    return t, Fs
+	x_lo = np.floor(x_pol).astype(int)
+	x_hi = np.ceil(x_pol).astype(int)
+	t=[]
+	Fs=[]
+	switch=0
+	Nval=0
+	cnt=0
+	tval=0
+	l_switch=0
+	ind=-1
+	f=open(lmpfile)
+	for x in f:
+		if x.strip()=='ITEM: TIMESTEP':
+			ind+=1
+			#t.append(float(f.readline().strip()))
+			#print(ind)
+			#print(t[-1])
+			tval=1
+			pos_data=0
+			if switch>0:# and cnt%10==0:
+				Fnorm = np.linalg.norm(fs,axis=1)
+				#print(Fnorm)
+				Fs=emptydstack(Fs,np.copy(fs))
+				#print(fs)
+				if switch==1:
+					switch=2
+				fs=np.zeros((Natoms,3))
+		elif tval==1:
+			tval=0
+			#print(x.strip())
+			t.append(float(x.strip()))
+			#print(t[-1])
+		elif x.strip()=='ITEM: NUMBER OF ENTRIES' and switch==0:
+			#print('found number of entries')
+			Nval=1
+		elif Nval==1:
+			Nval=0
+			N=int(x.strip())
+		elif x[0:16]=='ITEM: BOX BOUNDS' and switch==0:
+			l_switch=1
+		elif l_switch==1:
+			l_switch=2
+			l_line=x.strip().split(' ')
+			#print(l_line)
+			Lx=-float(l_line[0])+float(l_line[1])
+			#print(float(l_line[0]))
+
+			#print(Lx)
+		elif l_switch==2:
+			l_switch=3
+			l_line=x.strip().split(' ')
+			#print(l_line)
+			Ly=-float(l_line[0])+float(l_line[1])
+		elif l_switch==3:
+			l_switch=0
+			l_line=x.strip().split(' ')
+			#print(l_line)
+			Lz=-float(l_line[0])+float(l_line[1])
+			Ls=np.array([Lx,Ly,Lz])
+		elif x[0:13]=='ITEM: ENTRIES':
+			#print('found entries')
+			cnt+=1
+			pos_data=1
+			if switch==0:
+				switch=1
+				#print('initialize')
+				#rs=np.zeros((N,3,1000))
+				#vs=np.zeros((N,3,1000))
+				#print('initialization complete')
+				fs=np.zeros((Natoms,3))
+		elif pos_data==1:
+			line=x.strip().split(' ')
+			atomid0=int(line[1])-1
+			atomid1=int(line[2])-1
+			atomtype0=int(line[3])
+			atomtype1=int(line[4])
+
+			fx=float(line[5])
+			fy=float(line[6])
+			fz=float(line[7])
+			if (atomtype0==2 and atomtype1 == 1) or (atomtype1==2 and atomtype0==1):
+				#print('before:')
+				#print(fs)
+				#print('x_lo: %d, x_hi:  %d' %(x_lo[ind],x_hi[ind]))
+				#print('types: %d %d' %(atomtype0, atomtype1))
+				#print('ids: %d %d' %(atomid0, atomid1))
+				#print(np.array([-fx,-fy,-fz]))
+				if atomtype0 == 2:
+					if atomid1 == x_lo[ind] or atomid1 == x_hi[ind]:
+						fs[atomid1,:]+= np.array([-fx,-fy,-fz])
+						fs[atomid0,:]+= np.array([fx,fy,fz])
+				else:
+					if atomid0 == x_lo[ind] or atomid0 == x_hi[ind]:
+						fs[atomid0,:]+= np.array([fx,fy,fz])
+						fs[atomid1,:]+= np.array([-fx,-fy,-fz])
+				#print('after:')
+				#print(fs)
+		#if ind>5:
+		#    break
+	Fnorm = np.linalg.norm(fs,axis=1)
+	Fs=emptydstack(Fs,fs)
+	t=np.array(t)*float(dt)
+	print(t)
+	return t, Fs
 
 def get_polpos(rs, pol_ind, Nchain, L):
 	'''
@@ -446,56 +446,56 @@ def get_polpos(rs, pol_ind, Nchain, L):
 		drijs      displacement vectors pointing from higher index (i1s) to the active puller (pol_ind) (ndim x Nt, floats)
 		drs        displacement vectors pointing from higher index (i1s) to lower index (i0s) (ndim x Nt, floats)
 	'''
-    Nt = np.shape(rs)[2]
-    x_pol = []
-    i1s = []
-    i0s = []
-    drijs = []
-    drs = []
-    for i in np.arange(0,Nt):
-        dRvec = rs[:Nchain,:,i] - rs[pol_ind,:,i]
-        #print('shape of dRvec')
-        #print(np.shape(dRvec))
-        #print('Nchain: %d, pol_ind %d' %(Nchain,pol_ind))
-        dRvec -= L*np.round(dRvec/L)
-        dR = np.linalg.norm(dRvec,axis=1)
-        #print('shape of dR')
-        #print(np.shape(dR))
-        i_min = np.argmin(dR[1:Nchain-1])+1
-        if int(i_min+1)>=Nchain:
-            i1 = i_min
-            i0 = i_min-1
-        elif int(i_min)==0:
-            i1 = 1
-            i0 = 0
-        elif dR[int(i_min+1)]<=dR[int(i_min-1)]:
-            i1 = i_min + 1
-            i0 = i_min
-            i1 = i0+1
-        else:
-            i1 = i_min
-            i0 = i_min-1
-        i1s.append(i1)
-        i0s.append(i0)
-        dr = rs[i0,:,i] - rs[i1,:,i] # Displacement vector pointing from higher index to lower index
-        dr -= L*np.round(dr/L)
-        drij = rs[pol_ind,:,i] - rs[i1,:,i] # displacement vector pointing from higher index to pol
-        drij -= L*np.round(drij/L)
-        drijs=emptydstack(drijs,drij)
-        if i1 - np.dot(dr,drij)/np.linalg.norm(dr)<0:
-            print('i1 %d, i0: %d' %(i1,i0))
-            print('Distance to high index: %f,  Distance to low index: %f' %(dR[i1],dR[i0]))
-            print('Distance to high index+1: %f' %(dR[i1+1]))
-            u=dr/np.linalg.norm(dr)
-            print('u: %f, %f, %f,  u.drij: %f' %(u[0],u[1],u[2],np.dot(u,drij)))
-            print('dR[min]')
-            print(dR[i_min])
-            print('x_pol: %f' %(i1 -np.dot(u,drij)))
-            print(dR)
-            break
-        x_pol.append(i1 - np.dot(dr,drij)/np.linalg.norm(dr))
-        drs = emptydstack(drs,dr)
-    return np.array(x_pol), np.array(i1s), np.array(i0s), drijs, drs
+	Nt = np.shape(rs)[2]
+	x_pol = []
+	i1s = []
+	i0s = []
+	drijs = []
+	drs = []
+	for i in np.arange(0,Nt):
+		dRvec = rs[:Nchain,:,i] - rs[pol_ind,:,i]
+		#print('shape of dRvec')
+		#print(np.shape(dRvec))
+		#print('Nchain: %d, pol_ind %d' %(Nchain,pol_ind))
+		dRvec -= L*np.round(dRvec/L)
+		dR = np.linalg.norm(dRvec,axis=1)
+		#print('shape of dR')
+		#print(np.shape(dR))
+		i_min = np.argmin(dR[1:Nchain-1])+1
+		if int(i_min+1)>=Nchain:
+			i1 = i_min
+			i0 = i_min-1
+		elif int(i_min)==0:
+			i1 = 1
+			i0 = 0
+		elif dR[int(i_min+1)]<=dR[int(i_min-1)]:
+			i1 = i_min + 1
+			i0 = i_min
+			i1 = i0+1
+		else:
+			i1 = i_min
+			i0 = i_min-1
+		i1s.append(i1)
+		i0s.append(i0)
+		dr = rs[i0,:,i] - rs[i1,:,i] # Displacement vector pointing from higher index to lower index
+		dr -= L*np.round(dr/L)
+		drij = rs[pol_ind,:,i] - rs[i1,:,i] # displacement vector pointing from higher index to pol
+		drij -= L*np.round(drij/L)
+		drijs=emptydstack(drijs,drij)
+		if i1 - np.dot(dr,drij)/np.linalg.norm(dr)<0:
+			print('i1 %d, i0: %d' %(i1,i0))
+			print('Distance to high index: %f,  Distance to low index: %f' %(dR[i1],dR[i0]))
+			print('Distance to high index+1: %f' %(dR[i1+1]))
+			u=dr/np.linalg.norm(dr)
+			print('u: %f, %f, %f,  u.drij: %f' %(u[0],u[1],u[2],np.dot(u,drij)))
+			print('dR[min]')
+			print(dR[i_min])
+			print('x_pol: %f' %(i1 -np.dot(u,drij)))
+			print(dR)
+			break
+		x_pol.append(i1 - np.dot(dr,drij)/np.linalg.norm(dr))
+		drs = emptydstack(drs,dr)
+	return np.array(x_pol), np.array(i1s), np.array(i0s), drijs, drs
 
 
 def get_costheta_ij(rs, Nmon):
@@ -503,10 +503,10 @@ def get_costheta_ij(rs, Nmon):
 	Function that gets the cos of the angle of bond vector an index distance j away along the chain
 
 	Inputs:
-	    rs            array of coordinates (shape: N x ndim x Nt)
-	    Nmon          Number of monomers
+		rs            array of coordinates (shape: N x ndim x Nt)
+		Nmon          Number of monomers
 	Outputs:
-	    cos_thetas   vector of <cos(theta)> where theta = angle between bond vector i and vector i+j (length Nt of floats)
+		cos_thetas   vector of <cos(theta)> where theta = angle between bond vector i and vector i+j (length Nt of floats)
 	'''
 
 	Nt = np.shape(rs)[2]
@@ -538,17 +538,17 @@ def make_HiC(rs, thresh, Nevery):
 	Outputs:
 		counts    the raw counts of contacts between atoms in system(NxN of ints)
 	'''
-    Nsteps = np.shape(rs)[2]
-    Natoms = np.shape(rs)[0]
-    ind = 0
-    counts = np.zeros((Natoms,Natoms))
-    print('initialized counts')
-    for i in np.arange(0,Nsteps,Nevery):
-        ind+=1
-        counts+= get_HiCslice(rs[:,:,i], thresh)
-        print(i)
-    counts/=ind
-    return counts
+	Nsteps = np.shape(rs)[2]
+	Natoms = np.shape(rs)[0]
+	ind = 0
+	counts = np.zeros((Natoms,Natoms))
+	print('initialized counts')
+	for i in np.arange(0,Nsteps,Nevery):
+		ind+=1
+		counts+= get_HiCslice(rs[:,:,i], thresh)
+		print(i)
+	counts/=ind
+	return counts
 
 
 def get_FCC_FAC(fs, inds, dis):
@@ -563,28 +563,28 @@ def get_FCC_FAC(fs, inds, dis):
 		FCC    array of normalized cross correlation function for the force ()
 		FAC    array of normalized auto correlation function for the force
 	'''
-    taus = inds.astype(int)
-    dis = dis.astype(int)
-    FCC = np.zeros((len(taus),len(dis)))
-    j=-1
-    for di in dis:
-        j+=1
-        fpc = np.zeros(len(taus))
-        i=-1
-        for tau in taus:
-            i+=1
-            fpc[i]=np.nanmean(np.mean(np.sum(fs[di:,:,tau:]*fs[:-di,:,:-tau],axis=1),axis=1))
-        fpc/=np.sqrt(np.nanmean(np.sum(fs[di:,:,:]**2,axis=1)*np.sum(fs[:-di,:,:]**2,axis=1)))
-        FCC[:,j] = fpc
-        
-    fac = np.zeros(len(taus))
-    i=-1
-    for tau in taus:
-        i+=1
-        fac[i]=np.nanmean(np.mean(np.sum(fs[:,:,tau:]*fs[:,:,:-tau],axis=1),axis=1))
-    fac/=np.nanmean(np.sum(fs**2,axis=1))
-    FAC=fac
-    return FCC, FAC
+	taus = inds.astype(int)
+	dis = dis.astype(int)
+	FCC = np.zeros((len(taus),len(dis)))
+	j=-1
+	for di in dis:
+		j+=1
+		fpc = np.zeros(len(taus))
+		i=-1
+		for tau in taus:
+			i+=1
+			fpc[i]=np.nanmean(np.mean(np.sum(fs[di:,:,tau:]*fs[:-di,:,:-tau],axis=1),axis=1))
+		fpc/=np.sqrt(np.nanmean(np.sum(fs[di:,:,:]**2,axis=1)*np.sum(fs[:-di,:,:]**2,axis=1)))
+		FCC[:,j] = fpc
+
+	fac = np.zeros(len(taus))
+	i=-1
+	for tau in taus:
+		i+=1
+		fac[i]=np.nanmean(np.mean(np.sum(fs[:,:,tau:]*fs[:,:,:-tau],axis=1),axis=1))
+	fac/=np.nanmean(np.sum(fs**2,axis=1))
+	FAC=fac
+	return FCC, FAC
 
 
 def get_dr(rs, PolInd, Nmon, thresh, tind, Ls):
@@ -607,15 +607,15 @@ def get_dr(rs, PolInd, Nmon, thresh, tind, Ls):
 	print('mol0: %d, dR[mol0]: %f' %(mol0,dR[mol0]))
 	#print(dR[mol0])
 	if dR[mol0]<thresh and mol0<Nmon-1:
-	    if dR[mol0+1]>dR[mol0-1]:
-	        #dr goes between mol0 and mol0-1
-	        dr = rs[mol0,:]-rs[mol0-1,:]
-	    else:
-	        dr = rs[mol0+1,:]-rs[mol0,:]
+		if dR[mol0+1]>dR[mol0-1]:
+			#dr goes between mol0 and mol0-1
+			dr = rs[mol0,:]-rs[mol0-1,:]
+		else:
+			dr = rs[mol0+1,:]-rs[mol0,:]
 	else:
-	    dr = np.ones(3)*np.nan
+		dr = np.ones(3)*np.nan
 	if dR[mol0]>thresh:
-	    mol0=np.nan
+		mol0=np.nan
 	return dr, mol0
 
 
@@ -623,16 +623,16 @@ def get_dRt2(rs, mol0s, tind, taus, inds):
 	dRt = np.zeros((len(inds), len(taus)))*np.nan
 	i_t=-1
 	for tau in taus:
-	    i_t+=1
-	    i=-1
-	    for ind in inds:
-	        i+=1
-	        #dRt[i,i_t]=np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)])
-	        #print(np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)]))
-	        try:
-	            dRt[i,i_t]=np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)])
-	        except:
-	            dRt[i,i_t]=np.nan
+		i_t+=1
+		i=-1
+		for ind in inds:
+			i+=1
+			#dRt[i,i_t]=np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)])
+			#print(np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)]))
+			try:
+				dRt[i,i_t]=np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)])
+			except:
+				dRt[i,i_t]=np.nan
 	return dRt
 
 def get_dRtVec(rs, mol0s, tind, taus, inds):
@@ -642,17 +642,17 @@ def get_dRtVec(rs, mol0s, tind, taus, inds):
 	dRt = np.zeros((len(inds), len(taus),3))*np.nan
 	i_t=-1
 	for tau in taus:
-	    i_t+=1
-	    dR0 = rs[int(mol0s[i_t]-ind)]
-	    i=-1
-	    for ind in inds:
-	        i+=1
-	        #dRt[i,i_t]=np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)])
-	        #print(np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)]))
-	        try:
-	            dRt[i,i_t,:]=rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)]
-	        except:
-	            dRt[i,i_t]=np.nan
+		i_t+=1
+		dR0 = rs[int(mol0s[i_t]-ind)]
+		i=-1
+		for ind in inds:
+			i+=1
+			#dRt[i,i_t]=np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)])
+			#print(np.linalg.norm(rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)]))
+			try:
+				dRt[i,i_t,:]=rs[int(mol0s[i_t]-ind),:,int(tind+tau)]-rs[int(mol0s[i_t]-ind),:,int(tind)]
+			except:
+				dRt[i,i_t]=np.nan
 	return dRt
 
 
@@ -660,44 +660,44 @@ def get_dRt(rs, mol0, tind, taus, inds):
 	dRt = np.zeros((len(inds), len(taus)))*np.nan
 	i_t=-1
 	for tau in taus:
-	    i_t+=1
-	    i=-1
-	    for ind in inds:
-	        i+=1
-	        #print(np.linalg.norm(rs[int(mol0-ind),:,int(tind+tau)]-rs[int(mol0-ind),:,int(tind)]))
-	        try:
-	            dRt[i,i_t]=np.linalg.norm(rs[int(mol0-ind),:,int(tind+tau)]-rs[int(mol0-ind),:,int(tind)])
-	        except:
-	            dRt[i,i_t]=np.nan
+		i_t+=1
+		i=-1
+		for ind in inds:
+			i+=1
+			#print(np.linalg.norm(rs[int(mol0-ind),:,int(tind+tau)]-rs[int(mol0-ind),:,int(tind)]))
+			try:
+				dRt[i,i_t]=np.linalg.norm(rs[int(mol0-ind),:,int(tind+tau)]-rs[int(mol0-ind),:,int(tind)])
+			except:
+				dRt[i,i_t]=np.nan
 	return dRt
 
 def get_dRts(rs, PolInd, Nmon, thresh, taus, inds, Ls):
-    Nt = np.shape(rs)[2]
-    max_t = Nt - np.max(taus)-1
-    print(max_t)
-    print(len(inds))
-    print(len(taus))
-    dRts = np.zeros((max_t,len(inds), len(taus)))*np.nan
-    for tind in np.arange(0,max_t):
-    	mol0s=[]
-    	for tau in taus:
-	        dr, mol0 = get_dr(rs, PolInd, Nmon, thresh, int(np.floor(tind+tau/2)), Ls)
-        	mol0s.append(mol0)
-        mol0s= np.array(mol0s)
-        print(mol0s)
-        if not np.isnan(mol0s[0]):
-            dRts[tind,:,:] = get_dRt2(rs, mol0s, tind, taus, inds)
-    return dRts
+	Nt = np.shape(rs)[2]
+	max_t = Nt - np.max(taus)-1
+	print(max_t)
+	print(len(inds))
+	print(len(taus))
+	dRts = np.zeros((max_t,len(inds), len(taus)))*np.nan
+	for tind in np.arange(0,max_t):
+		mol0s=[]
+		for tau in taus:
+			dr, mol0 = get_dr(rs, PolInd, Nmon, thresh, int(np.floor(tind+tau/2)), Ls)
+			mol0s.append(mol0)
+		mol0s= np.array(mol0s)
+		print(mol0s)
+		if not np.isnan(mol0s[0]):
+			dRts[tind,:,:] = get_dRt2(rs, mol0s, tind, taus, inds)
+	return dRts
 
 def get_dRt0s(rs, Ind, taus, inds):
-    Nt = np.shape(rs)[2]
-    max_t = Nt - np.max(taus)-1
-    dRts = np.zeros((max_t,len(inds), len(taus)))*np.nan
-    for tind in np.arange(0,max_t):
-        mol0 = Ind#dr, mol0 = get_dr(rs, PolInd, Nmon, thresh, int(np.floor(tind+tau/2)))
-        if not np.isnan(mol0):
-            dRts[tind,:,:] = get_dRt(rs, mol0, tind, taus, inds)
-    return dRts
+	Nt = np.shape(rs)[2]
+	max_t = Nt - np.max(taus)-1
+	dRts = np.zeros((max_t,len(inds), len(taus)))*np.nan
+	for tind in np.arange(0,max_t):
+		mol0 = Ind#dr, mol0 = get_dr(rs, PolInd, Nmon, thresh, int(np.floor(tind+tau/2)))
+		if not np.isnan(mol0):
+			dRts[tind,:,:] = get_dRt(rs, mol0, tind, taus, inds)
+	return dRts
 
 def pol_vs(polatomIDs, vs, rs, maxmon):
 	v_pol = []
@@ -718,134 +718,132 @@ def get_drPolInd(maxmon, polatomID, rs):
 
 
 def get_ribDist(Nrib, seedval, polysome_distfile):
-    Dist=np.round(np.loadtxt(polysome_distfile))
-    CumDist = np.cumsum(Dist/np.sum(Dist))
+	Dist=np.round(np.loadtxt(polysome_distfile))
+	CumDist = np.cumsum(Dist/np.sum(Dist))
 
-    np.random.seed(seedval)
-    Nper = np.arange(1,8)
-    Nmade_rib=0
-    Nlist = np.zeros(len(Nper))
-    while Nmade_rib < 0.63*Nrib:
-        N_i = int(Nper[np.where(np.random.rand()<CumDist)[0][0]])
-        if N_i>1:
-            Nlist[N_i]+=1
-            Nmade_rib+=N_i
-    Nfree = Nrib - Nmade_rib
-    return Nfree, Nlist
+	np.random.seed(seedval)
+	Nper = np.arange(1,8)
+	Nmade_rib=0
+	Nlist = np.zeros(len(Nper))
+	while Nmade_rib < 0.63*Nrib:
+		N_i = int(Nper[np.where(np.random.rand()<CumDist)[0][0]])
+		if N_i>1:
+			Nlist[N_i]+=1
+			Nmade_rib+=N_i
+	Nfree = Nrib - Nmade_rib
+	return Nfree, Nlist
 
 def get_POLforces(filename, Natoms):
-    Fs =[]
-    t=[]
-    switch=0
-    fs = np.zeros((Natoms,3))
-    f0=open(filename)
-    for line in f0:
-        if line.strip()[0:4] == 'Step':
-            t.append(float(line.strip().split(' ')[1]))
-            Fs = emptydstack(Fs,fs)
-            fs = np.zeros((Natoms,3))
-        if switch==1:
-            x = line.strip().split('\t')
-            i = int(x[0])-1
-            j = int(x[1])-1
-            f = np.array([float(x[2]),float(x[3]), float(x[4])])
-            fs[i,:] += f
-            fs[j,:] -= f
-            switch=0
-        if line.strip()[0:11]=='Pair Forces':
-            switch=1
-    f0.close()
-    return Fs[:,:,1:], np.array(t[1:])
+	Fs =[]
+	t=[]
+	switch=0
+	fs = np.zeros((Natoms,3))
+	f0=open(filename)
+	for line in f0:
+		if line.strip()[0:4] == 'Step':
+			t.append(float(line.strip().split(' ')[1]))
+			Fs = emptydstack(Fs,fs)
+			fs = np.zeros((Natoms,3))
+		if switch==1:
+			x = line.strip().split('\t')
+			i = int(x[0])-1
+			j = int(x[1])-1
+			f = np.array([float(x[2]),float(x[3]), float(x[4])])
+			fs[i,:] += f
+			fs[j,:] -= f
+			switch=0
+		if line.strip()[0:11]=='Pair Forces':
+			switch=1
+	f0.close()
+	return Fs[:,:,1:], np.array(t[1:])
 
 def calc_theta_phi(r):
-    '''
-    Function that calculates the spherical polar angles (phi, psi) of a 
-    vector in real space
+	'''
+	Function that calculates the spherical polar angles (phi, psi) of a
+	vector in real space
 
-    Inputs:
-        r       position vector (vector of length 3 of floats)
+	Inputs:
+		r       position vector (vector of length 3 of floats)
 
-    Outputs:
-        theta   angle in radians defining declination from +z axis (float)
-        phi     angle in radians from +x axis in xy plane (float)
-    '''
-    r_mag=np.linalg.norm(r)
-    costheta=r[2]/r_mag
-    theta=np.arccos(costheta)
-    sintheta=np.sin(np.arccos(costheta))
-    cosphi=r[0]/(r_mag*sintheta)
-    sinphi=r[1]/(r_mag*sintheta)
-    # Determine quadrant of angle based on signs of cos and sin and 
-    #    place angle accordingly and convert to degrees
-    if cosphi>0:
-        phi=np.arcsin(sinphi)
-    elif sinphi<0:
-        phi=-np.arccos(cosphi)
-    else:
-        phi=np.arccos(cosphi)
-    return theta, phi
+	Outputs:
+		theta   angle in radians defining declination from +z axis (float)
+		phi     angle in radians from +x axis in xy plane (float)
+	'''
+	r_mag=np.linalg.norm(r)
+	costheta=r[2]/r_mag
+	theta=np.arccos(costheta)
+	sintheta=np.sin(np.arccos(costheta))
+	cosphi=r[0]/(r_mag*sintheta)
+	sinphi=r[1]/(r_mag*sintheta)
+	# Determine quadrant of angle based on signs of cos and sin and
+	#    place angle accordingly and convert to degrees
+	if cosphi>0:
+		phi=np.arcsin(sinphi)
+	elif sinphi<0:
+		phi=-np.arccos(cosphi)
+	else:
+		phi=np.arccos(cosphi)
+	return theta, phi
 
 def write_xyzfile(filename, rs, types,L):# mols, r_mol, atom_types, time):
-    names=["X","Ac","Ag","Al","Am","Ar","As","At","Au","B","Ba","Be","Bh",
-            "Bi","Bk","Br","Ca","Cd","Ce","Cf","Cl","Cm","Co","Cr","Cs","Cu","Db",
-            "Ds","Dy","Er","Es","Eu","F","Fe","Fm","Fr","Ga","Gd","Ge","He","Hf",
-            "Hg","Ho","Hs","I","In","Ir","K","Kr","La","Li","Lr","Lu","Md","Mg","Mn",
-            "Mo","Mt","Na","Nb","Nd","Ne","Ni","No","Np","Os","Pa","Pb",
-            "Pd","Pm","Po","Pr","Pt","Pu","Ra","Rb","Re","Rf","Rg","Rh","Rn","Ru",
-            "Sb","Sc","Se","Sg","Si","Sm","Sn","Sr","Ta","Tb","Tc","Te","Th","Ti","Tl",
-            "Tm","U","V","W","Xe","Y","Yb","Zn","Zr"]
-    Ntype = len(np.unique(types))
-    file_handle = open(filename, 'w')
-    N=np.shape(rs)[0]
-    Nt = np.shape(rs)[2]
-    print(N)
-    for t in np.arange(0,Nt):
-        file_handle.write(str(N))
-        file_handle.write('\nAtoms. Timestep: '+str(0))
+	names=["X","Ac","Ag","Al","Am","Ar","As","At","Au","B","Ba","Be","Bh",
+			"Bi","Bk","Br","Ca","Cd","Ce","Cf","Cl","Cm","Co","Cr","Cs","Cu","Db",
+			"Ds","Dy","Er","Es","Eu","F","Fe","Fm","Fr","Ga","Gd","Ge","He","Hf",
+			"Hg","Ho","Hs","I","In","Ir","K","Kr","La","Li","Lr","Lu","Md","Mg","Mn",
+			"Mo","Mt","Na","Nb","Nd","Ne","Ni","No","Np","Os","Pa","Pb",
+			"Pd","Pm","Po","Pr","Pt","Pu","Ra","Rb","Re","Rf","Rg","Rh","Rn","Ru",
+			"Sb","Sc","Se","Sg","Si","Sm","Sn","Sr","Ta","Tb","Tc","Te","Th","Ti","Tl",
+			"Tm","U","V","W","Xe","Y","Yb","Zn","Zr"]
+	Ntype = len(np.unique(types))
+	file_handle = open(filename, 'w')
+	N=np.shape(rs)[0]
+	Nt = np.shape(rs)[2]
+	print(N)
+	for t in np.arange(0,Nt):
+		file_handle.write(str(N))
+		file_handle.write('\nAtoms. Timestep: '+str(0))
 
-        for i in np.arange(0,N):
-            file_handle.write('\n'+names[int(types[i])])
-            for k in np.arange(0,3):
-                file_handle.write('\t'+str(rs[i,k,t]))
-        '''
-        for i in np.arange(0,N):
-            file_handle.write('\n'+names[int(types[i]+Ntype)])
-            for k in np.arange(0,3):
-                file_handle.write('\t'+str(rs[i,k,t]-L*np.round(rs[i,k,t]/L)))
-        '''
-        file_handle.write('\n')
-    file_handle.close()
-    
+		for i in np.arange(0,N):
+			file_handle.write('\n'+names[int(types[i])])
+			for k in np.arange(0,3):
+				file_handle.write('\t'+str(rs[i,k,t]))
+		'''
+		for i in np.arange(0,N):
+			file_handle.write('\n'+names[int(types[i]+Ntype)])
+			for k in np.arange(0,3):
+				file_handle.write('\t'+str(rs[i,k,t]-L*np.round(rs[i,k,t]/L)))
+		'''
+		file_handle.write('\n')
+	file_handle.close()
+
 def make_tclfile(tclname, diameters, L):
-    f=open(tclname,'w')
-    ntype=len(diameters)
-    colors=["blue","red","gray","orange","yellow","tan","silver","green","white",
-            "pink","cyan","purple","lime","mauve","ochre","iceblue","black","yellow2",
-            "yellow3","green2","green3","cyan2","cyan3","blue2","blue3","violet","violet2",
-            "magenta","magenta2","red2","red3","orange2","orange3"]
-    names=["X","Ac","Ag","Al","Am","Ar","As","At","Au","B","Ba","Be","Bh",
-            "Bi","Bk","Br","Ca","Cd","Ce","Cf","Cl","Cm","Co","Cr","Cs","Cu","Db",
-            "Ds","Dy","Er","Es","Eu","F","Fe","Fm","Fr","Ga","Gd","Ge","He","Hf",
-            "Hg","Ho","Hs","I","In","Ir","K","Kr","La","Li","Lr","Lu","Md","Mg","Mn",
-            "Mo","Mt","Na","Nb","Nd","Ne","Ni","No","Np","Os","Pa","Pb",
-            "Pd","Pm","Po","Pr","Pt","Pu","Ra","Rb","Re","Rf","Rg","Rh","Rn","Ru",
-            "Sb","Sc","Se","Sg","Si","Sm","Sn","Sr","Ta","Tb","Tc","Te","Th","Ti","Tl",
-            "Tm","U","V","W","Xe","Y","Yb","Zn","Zr"]
-    i_c=0
-    i_n=0
-    for i_n in np.arange(0,ntype):
-        f.write('color Element '+names[i_n]+' '+colors[i_c]+'\n')
-        f.write('set natoms [atomselect 0 \"name '+names[i_n]+'\";];\n')
-        f.write('$natoms set radius '+str(diameters[i_n]/2)+'\n\n')
-        i_n+=1
-        i_c+=1
-        if i_c>len(colors)-1:
-            i_c=0
-    f.write('set cell [pbc set {'+str(L)+' '+str(L)+' '+str(L)+' } -all];\n')
-    f.write('pdb box -toggle -center origin -color red;')
-    f.close()
+	f=open(tclname,'w')
+	ntype=len(diameters)
+	colors=["blue","red","gray","orange","yellow","tan","silver","green","white",
+			"pink","cyan","purple","lime","mauve","ochre","iceblue","black","yellow2",
+			"yellow3","green2","green3","cyan2","cyan3","blue2","blue3","violet","violet2",
+			"magenta","magenta2","red2","red3","orange2","orange3"]
+	names=["X","Ac","Ag","Al","Am","Ar","As","At","Au","B","Ba","Be","Bh",
+			"Bi","Bk","Br","Ca","Cd","Ce","Cf","Cl","Cm","Co","Cr","Cs","Cu","Db",
+			"Ds","Dy","Er","Es","Eu","F","Fe","Fm","Fr","Ga","Gd","Ge","He","Hf",
+			"Hg","Ho","Hs","I","In","Ir","K","Kr","La","Li","Lr","Lu","Md","Mg","Mn",
+			"Mo","Mt","Na","Nb","Nd","Ne","Ni","No","Np","Os","Pa","Pb",
+			"Pd","Pm","Po","Pr","Pt","Pu","Ra","Rb","Re","Rf","Rg","Rh","Rn","Ru",
+			"Sb","Sc","Se","Sg","Si","Sm","Sn","Sr","Ta","Tb","Tc","Te","Th","Ti","Tl",
+			"Tm","U","V","W","Xe","Y","Yb","Zn","Zr"]
+	i_c=0
+	i_n=0
+	for i_n in np.arange(0,ntype):
+		f.write('color Element '+names[i_n]+' '+colors[i_c]+'\n')
+		f.write('set natoms [atomselect 0 \"name '+names[i_n]+'\";];\n')
+		f.write('$natoms set radius '+str(diameters[i_n]/2)+'\n\n')
+		i_n+=1
+		i_c+=1
+		if i_c>len(colors)-1:
+			i_c=0
+	f.write('set cell [pbc set {'+str(L)+' '+str(L)+' '+str(L)+' } -all];\n')
+	f.write('pdb box -toggle -center origin -color red;')
+	f.close()
 
 ProcPol(args.xyzfile, args.logfile, args.Ndt, args.dt, args.P0, args.f0, args.phi, args.seed, args.Nsteps, args.T, args.epsilon, args.molfile, args.theta,
  args.lef, args.bondangles, args.sigCrowd, args.k_att, args.sig_p, args.N, args.BCs, args.Nmon)
-
-
