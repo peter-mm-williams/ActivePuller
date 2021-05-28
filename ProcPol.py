@@ -56,13 +56,17 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	tsF = np.zeros((Nfrac,len(Ndiffs)))
 
 	# Fill in rs_master for positions of coordinates (Natoms x ndim x Number of data points per lag x Number of lags)
-	rs_master = np.zeros((Natoms,3,Nfrac,len(Ndiffs)))
+	rs_master = np.zeros((Natoms,3,Nfrac,len(Ndiffs)))*np.nan
 	i=0
 	for nt in np.arange(0,Nfrac):
 	    for ind in np.arange(0,len(Ndiffs)):
 	        ts[nt,ind] = t[i]
 	        rs_master[:,:,nt,ind] = rs[:,:,i]
 	        i+=1
+	        if i>np.shape(rs)[2]:
+	        	break
+        if i>np.shape(rs)[2]:
+        	break
 	np.save(xyzfile[:-4]+'.Rshort.npy', rs_master) # save rs_master to npy file
 
 	# Load in forces at short times and calculate force correlation functions
@@ -74,27 +78,31 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 		        tsF[nt,ind] = tF[i]
 		        fs_master[:,:,nt,ind] = Fs[:,:,i]
 		        i+=1
+		        if i>np.shape(Fs)[2]:
+		        	break
+	        if i>np.shape(Fs)[2]:
+	        	break
 		np.save(xyzfile[:-4]+'.Fshort.npy', fs_master)
 		dis=np.arange(1,5)
 		FAC = np.zeros(len(Ndiffs))
 		FPC = np.zeros((len(dis),2*len(Ndiffs)))
-		fmean = np.mean(np.mean(fs_master[:Nchain,:,:,0],axis=2),axis=1)
-		fmean2 = np.sum(fmean*fmean)
-		FACnorm = np.mean(np.sum(fs_master[:Nchain,:,:,0]*fs_master[:Nchain,:,:,0],axis=1))-fmean2
+		fmean = np.nanmean(np.nanmean(fs_master[:Nchain,:,:,0],axis=2),axis=1)
+		fmean2 = np.nansum(fmean*fmean)
+		FACnorm = np.nanmean(np.sum(fs_master[:Nchain,:,:,0]*fs_master[:Nchain,:,:,0],axis=1))-fmean2
 		for i in np.arange(0,len(Ndiffs)):
-		    FAC[i] = (np.mean(np.sum(fs_master[:Nchain,:,:,i]*fs_master[:Nchain,:,:,0],axis=1))-fmean2)/FACnorm
+		    FAC[i] = (np.nanmean(np.sum(fs_master[:Nchain,:,:,i]*fs_master[:Nchain,:,:,0],axis=1))-fmean2)/FACnorm
 		for i in np.arange(-len(Ndiffs),len(Ndiffs)):
 		    for j in np.arange(0,len(dis)):
 		        if i<0:
-		            FPC[j,i] = np.mean(np.sum(fs_master[dis[j]:Nchain,:,:,i]*fs_master[:Nchain-dis[j],:,:,0],axis=1))
-		            f_norm = np.mean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
-		            g_norm = np.mean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
+		            FPC[j,i] = np.nanmean(np.sum(fs_master[dis[j]:Nchain,:,:,i]*fs_master[:Nchain-dis[j],:,:,0],axis=1))
+		            f_norm = np.nanmean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
+		            g_norm = np.nanmean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
 		            FPC[j,i]/= (f_norm*g_norm)
 		            #np.sqrt(np.mean(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1))*np.mean(np.sum(fs_master[:Nchain-1-dis[j],:,:,:]**2,axis=1)))
 		        else:
-		            FPC[j,i] = np.mean(np.sum(fs_master[dis[j]:Nchain,:,:,0]*fs_master[:Nchain-dis[j],:,:,i],axis=1))
-		            f_norm = np.mean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
-		            g_norm = np.mean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
+		            FPC[j,i] = np.nanmean(np.sum(fs_master[dis[j]:Nchain,:,:,0]*fs_master[:Nchain-dis[j],:,:,i],axis=1))
+		            f_norm = np.nanmean(np.sqrt(np.sum(fs_master[dis[j]:Nchain,:,:,:]**2,axis=1)))
+		            g_norm = np.nanmean(np.sqrt(np.sum(fs_master[:Nchain-dis[j],:,:,:]**2,axis=1)))
 		            FPC[j,i]/= (f_norm*g_norm)
 		np.save(xyzfile[:-4]+'.FPCshort.npy', FPC)
 		np.save(xyzfile[:-4]+'.FACshort.npy', FAC)
@@ -110,7 +118,7 @@ def ProcPol(xyzfile, logfile, Ndt, dt, P0, fmag, phi_target, seedval, Nsteps, T,
 	    dts[i] = ts[0,i]-ts[0,0]
 	    Ct[:,i] = np.nanmean(Ree[:,:,i]*Ree[:,:,0],axis=0)
 	# Calculate mean square displacement
-	MSD = np.mean(np.sum(dR**2,axis=1),axis=1)
+	MSD = np.nanmean(np.sum(dR**2,axis=1),axis=1)
 	# Take mean and normalize end-to-end vector correlation function ("Ct_norm")
 	Ct_norm = np.nanmean(Ct,axis=0)
 	Ct_norm /= Ct_norm[0]
