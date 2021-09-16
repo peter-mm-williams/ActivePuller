@@ -52,7 +52,7 @@ runString="cd `pwd`"
 filestr="$basestr"_seed"$seed"
 
 inf=$inputdir/$molInFile
-xyzf=$outputdir/$xyzOutFile
+xyzf=$simdatadir/$filestr.$xyzOutFile
 pyf=$chromatindir/PolymerPol_Bare.py
 
 runString="$runString ; mpirun -np 1 python $pyf -m $inf -x $xyzf -S $seed -t $nSteps -d $dt -k $kPol -b $bondAngles -f $phiMin -F $extForce -N $nPols -B $BC -O $boolShortDat"
