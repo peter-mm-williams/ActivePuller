@@ -26,7 +26,7 @@ boolShortDat="${12}"
 partition="${13}"
 time="${14}"
 
-basestr=nPols"$nPols"extF"$extForce"nt"$nsteps"dt"$dt"k"$kPol"
+basestr=nPols"$nPols"extF"$extForce"nt"$nSteps"dt"$dt"k"$kPol"
 runstr="$basestr"_seed"$seed"
 
 simdatadir=$outputdir/$basestr
