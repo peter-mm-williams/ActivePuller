@@ -23,6 +23,8 @@ extForce=$9
 nPols="${10}"
 BC="${11}"
 boolShortDat="${12}"
+partition="${13}"
+time="${14}"
 
 basestr=nPols"$nPols"extF"$extForce"nt"$nsteps"dt"$dt"k"$kPol"
 runstr="$basestr"_seed"$seed"
