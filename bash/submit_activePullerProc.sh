@@ -55,7 +55,7 @@ filestr="$basestr"_seed"$seed"
 
 inf=$inputdir/$molInFile
 xyzf=$simdatadir/$filestr.$xyzOutFile
-pyf=$chromatindir/procPol.py
+pyf=$chromatindir/ProcPol.py
 
 runString="$runString ; python $pyf -m $inf -x $xyzf -t $nSteps -d $dt -k $kPol -b $bondAngles -f $phiMin -F $extForce -N $nPols -B $BC -M $nMon"
 
