@@ -3,7 +3,7 @@
 #SBATCH --job-name=ActivePullerSim
 #SBATCH --output=output/ActivePullerSim.txt
 #SBATCH --ntasks=1
-#SBATCH -p pi_ohern
+#SBATCH -p pi_ohern,scavenge
 #SBATCH --time=10:00:00
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=andrewtondata@gmail.com

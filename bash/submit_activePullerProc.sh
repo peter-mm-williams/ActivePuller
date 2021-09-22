@@ -22,7 +22,7 @@ phiMin=$8
 extForce=$9
 nPols="${10}"
 BC="${11}"
-boolShortDat="${12}"
+nMon="${12}"
 partition="${13}"
 time="${14}"
 
@@ -43,7 +43,7 @@ echo phiMin = "$phiMin"
 echo extForce = "$extForce"
 echo nPols = "$nPols"
 echo BC = "$BC"
-echo boolShortDat = "$boolShortDat"
+echo nMonomers = "$nMon"
 
 # create task file
 taskf=tasks/"$runstr".task
@@ -55,9 +55,9 @@ filestr="$basestr"_seed"$seed"
 
 inf=$inputdir/$molInFile
 xyzf=$simdatadir/$filestr.$xyzOutFile
-pyf=$chromatindir/PolymerPol_Bare.py
+pyf=$chromatindir/procPol.py
 
-runString="$runString ; mpirun -np 1 python $pyf -m $inf -x $xyzf -S $seed -t $nSteps -d $dt -k $kPol -b $bondAngles -f $phiMin -F $extForce -N $nPols -B $BC -O $boolShortDat"
+runString="$runString ; python $pyf -m $inf -x $xyzf -t $nSteps -d $dt -k $kPol -b $bondAngles -f $phiMin -F $extForce -N $nPols -B $BC -M $nMon"
 
 runString="$runString ;"
 
@@ -72,7 +72,7 @@ fi
 
 # setup slurm files
 slurmf=slurm/"$runstr".slurm
-job_name=activePullerSim"$runstr"
+job_name=activePullerProc"$runstr"
 runout=out/"$runstr"-%a.out
 rm -f $slurmf
 
